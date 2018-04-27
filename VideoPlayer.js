@@ -3,6 +3,7 @@ import Video from 'react-native-video';
 import {
     TouchableWithoutFeedback,
     TouchableHighlight,
+    TouchableOpacity,
     ImageBackground,
     PanResponder,
     StyleSheet,
@@ -33,7 +34,7 @@ export default class VideoPlayer extends Component {
             volume: this.props.volume || 1,
             rate: this.props.rate || 1,
             // Controls
-            
+
             isFullscreen: this.props.resizeMode === 'cover' || false,
             showTimeRemaining: true,
             volumeTrackWidth: 0,
@@ -487,7 +488,7 @@ export default class VideoPlayer extends Component {
 
         state.seekerFillWidth = position;
         state.seekerPosition = position;
-        
+
         if ( ! state.seeking ) {
             state.seekerOffset = position
         };
@@ -813,6 +814,7 @@ export default class VideoPlayer extends Component {
                 {
                     opacity: this.animations.topControl.opacity,
                     marginTop: this.animations.topControl.marginTop,
+                    zIndex: 11
                 }
             ]}>
                 <ImageBackground
@@ -1013,7 +1015,7 @@ export default class VideoPlayer extends Component {
      * Renders an empty control, used to disable a control without breaking the view layout.
      */
     renderNullControl() {
-        return this.renderControl(<View></View>);   
+        return this.renderControl(<View></View>);
     }
 
 
@@ -1038,6 +1040,23 @@ export default class VideoPlayer extends Component {
         }
         return null;
     }
+
+    renderPlayButton() {
+            if ( this.state.paused && !this.state.loading ) {
+                return (
+                    <TouchableOpacity
+                        style={[styles.loader.container, {zIndex: 10, backgroundColor: 'rgba(0,0,0,0.5)' }]}
+                        onPress={() => {this._togglePlayPause()}}
+                    >
+                        <Image
+                            source={require('./assets/img/play.png')}
+                            style={[styles.loader.icon, {width: 38, height: 60}]}
+                        />
+                    </TouchableOpacity>
+                );
+            }
+            return null;
+        }
 
     renderError() {
         if ( this.state.error ) {
@@ -1086,6 +1105,7 @@ export default class VideoPlayer extends Component {
                     { this.renderError() }
                     { this.renderTopControls() }
                     { this.renderLoader() }
+                    { this.renderPlayButton() }
                     { this.renderBottomControls() }
                 </View>
             </TouchableWithoutFeedback>
